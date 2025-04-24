@@ -12,7 +12,7 @@ import {
   SidebarProvider
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, User, LogOut, Shield } from "lucide-react";
+import { LayoutDashboard, User, LogOut, Shield, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
@@ -57,6 +57,14 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                       <Button variant="ghost" className="w-full justify-start" onClick={() => navigate("/dashboard/profile")}>
                         <User className="mr-2 h-4 w-4" />
                         Profile
+                      </Button>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Button variant="ghost" className="w-full justify-start" onClick={() => navigate("/dashboard/settings")}>
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
                       </Button>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
