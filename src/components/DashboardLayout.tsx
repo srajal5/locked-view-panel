@@ -3,19 +3,26 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, User, LogOut } from "lucide-react";
+import { LayoutDashboard, User, LogOut, Shield } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
   useEffect(() => {
-    const isAdmin = localStorage.getItem("isAdmin");
-    if (!isAdmin) {
-      navigate("/login");
-    }
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        navigate("/login");
+      }
+    };
+    
+    checkAuth();
   }, [navigate]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem("isAdmin");
     navigate("/login");
   };
@@ -43,6 +50,16 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                     </Button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                {isAdmin && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Button variant="ghost" className="w-full justify-start" onClick={() => {}}>
+                        <Shield className="mr-2 h-4 w-4" />
+                        Admin Settings
+                      </Button>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <Button variant="ghost" className="w-full justify-start text-red-500" onClick={handleLogout}>

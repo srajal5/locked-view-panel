@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -26,19 +25,16 @@ const AuthForm = () => {
 
         if (error) throw error;
 
-        // Check if user is admin
+        // Get user profile data
         const { data: profileData } = await supabase
           .from('profiles')
           .select('is_admin')
           .eq('id', data.user.id)
           .single();
 
-        if (!profileData?.is_admin) {
-          await supabase.auth.signOut();
-          toast.error("Access denied. Admin privileges required.");
-          return;
-        }
-
+        // Store whether user is admin
+        localStorage.setItem("isAdmin", profileData?.is_admin ? "true" : "false");
+        
         toast.success("Successfully logged in!");
         navigate("/dashboard");
       } else {
