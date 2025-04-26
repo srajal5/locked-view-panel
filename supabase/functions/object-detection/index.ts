@@ -26,24 +26,16 @@ serve(async (req) => {
       )
     }
 
-    // Start WebSocket connection for video stream
-    const { socket, response } = Deno.upgradeWebSocket(req)
-
-    socket.onopen = () => {
-      console.log('WebSocket connection established')
-    }
-
-    socket.onmessage = (event) => {
-      // Handle incoming messages from client
-      console.log('Received:', event.data)
-    }
-
-    socket.onerror = (error) => {
-      console.error('WebSocket error:', error)
-    }
-
-    return response
+    // Return success response for the initial HTTP request
+    return new Response(
+      JSON.stringify({ success: true, message: 'IP address validated', ipAddress }),
+      { 
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    )
   } catch (error) {
+    console.error('Error in object-detection function:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
