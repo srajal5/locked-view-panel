@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Bell, Telegram, Blynk, Firebase } from "lucide-react";
+import { Bell, MessageCircle, Cloud, ServerIcon } from "lucide-react";
 import { useState } from "react";
 
 const Settings = () => {
@@ -70,21 +70,21 @@ const Settings = () => {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="telegram" id="telegram" />
                   <Label htmlFor="telegram" className="flex items-center gap-2">
-                    <Telegram className="h-4 w-4" />
+                    <MessageCircle className="h-4 w-4" />
                     Telegram
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="blynk" id="blynk" />
                   <Label htmlFor="blynk" className="flex items-center gap-2">
-                    <Blynk className="h-4 w-4" />
+                    <Cloud className="h-4 w-4" />
                     Blynk Cloud
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="firebase" id="firebase" />
                   <Label htmlFor="firebase" className="flex items-center gap-2">
-                    <Firebase className="h-4 w-4" />
+                    <ServerIcon className="h-4 w-4" />
                     Firebase Cloud
                   </Label>
                 </div>
