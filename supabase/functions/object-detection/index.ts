@@ -26,9 +26,21 @@ serve(async (req) => {
       )
     }
 
-    // Return success response for the initial HTTP request
+    // Instructions on how to connect to the WebSocket server
+    const instructions = `
+To start the object detection WebSocket server, run:
+python object_detection_websocket.py ${ipAddress}
+    `.trim();
+
+    // Return success response with instructions
     return new Response(
-      JSON.stringify({ success: true, message: 'IP address validated', ipAddress }),
+      JSON.stringify({ 
+        success: true, 
+        message: 'IP address validated', 
+        ipAddress,
+        instructions,
+        wsPort: 8765 // Default WebSocket port
+      }),
       { 
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

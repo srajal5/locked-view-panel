@@ -1,12 +1,13 @@
 
+import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Play, WifiOff, Camera } from "lucide-react";
-import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import VideoStream from "@/components/VideoStream";
 
 const Dashboard = () => {
   const [ipAddress, setIpAddress] = useState("");
@@ -50,17 +51,10 @@ const Dashboard = () => {
       // If we've reached here, the IP address has been validated
       setIsConnected(true);
       
-      // Here you would typically establish a WebSocket connection to your Python script
-      // For now, we'll just show a success message
       toast({
         title: "Connection established",
-        description: `Successfully validated IP address: ${ipAddress}. Set up this IP address in your Python script.`,
+        description: `Successfully connected to camera at ${ipAddress}. Starting video stream...`,
       });
-
-      // In a real implementation, you would now:
-      // 1. Open a WebSocket to stream video data
-      // 2. Process detection results
-      // 3. Display the video feed with bounding boxes
 
     } catch (error) {
       console.error('Error:', error);
@@ -69,6 +63,7 @@ const Dashboard = () => {
         title: "Connection failed",
         description: error.message || "Failed to connect to camera stream",
       });
+      setIsConnected(false);
     } finally {
       setIsConnecting(false);
     }
@@ -85,7 +80,7 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <h1 className="text-3xl font-bold mb-8">Dashboard Overview</h1>
-      <div className="max-w-md">
+      <div className="space-y-6">
         <Card>
           <CardContent className="pt-6">
             <div className="space-y-4">
@@ -131,13 +126,24 @@ const Dashboard = () => {
                     <span>Connected to: {ipAddress}</span>
                   </div>
                   <p className="text-sm text-gray-500 mt-2">
-                    Run your Python script with this IP address to begin object detection.
+                    Run the Python script to start object detection:
                   </p>
+                  <code className="block bg-black text-white p-2 rounded mt-2 text-xs overflow-x-auto">
+                    python object_detection_websocket.py {ipAddress}
+                  </code>
                 </div>
               )}
             </div>
           </CardContent>
         </Card>
+        
+        {/* Video stream component */}
+        {(isConnected || isConnecting) && (
+          <VideoStream 
+            ipAddress={ipAddress} 
+            isConnected={isConnected} 
+          />
+        )}
       </div>
     </DashboardLayout>
   );
