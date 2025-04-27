@@ -22,16 +22,18 @@ type ConfigFormData = {
 export function ConfigurationForm() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  
+  const defaultValues: ConfigFormData = {
+    camera_url: '',
+    camera_port: '',
+    blynk_auth_token: '',
+    telegram_bot_token: '',
+    telegram_chat_id: '',
+    enable_logging: false,
+  };
 
   const { register, handleSubmit, setValue, watch } = useForm<ConfigFormData>({
-    defaultValues: {
-      camera_url: '',
-      camera_port: '',
-      blynk_auth_token: '',
-      telegram_bot_token: '',
-      telegram_chat_id: '',
-      enable_logging: false,
-    },
+    defaultValues,
   });
 
   useEffect(() => {
