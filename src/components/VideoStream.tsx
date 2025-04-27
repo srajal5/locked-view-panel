@@ -22,6 +22,7 @@ const VideoStream = ({ ipAddress, wsPort = 8765, isConnected }: VideoStreamProps
   const [statusMessage, setStatusMessage] = useState<string>("Waiting for connection...");
   const [latestImage, setLatestImage] = useState<string | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
+  const isSecureConnection = window.location.protocol === 'https:';
 
   useEffect(() => {
     if (!isConnected) {
@@ -38,12 +39,15 @@ const VideoStream = ({ ipAddress, wsPort = 8765, isConnected }: VideoStreamProps
       return;
     }
 
-    // Determine protocol based on current page protocol
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    // Determine WebSocket protocol based on current page protocol
+    const wsProtocol = isSecureConnection ? 'wss:' : 'ws:';
     
     try {
       // Connect to WebSocket when ipAddress is provided and connection is active
-      const ws = new WebSocket(`${protocol}//${ipAddress}:${wsPort}`);
+      const wsUrl = `${wsProtocol}//${ipAddress}:${wsPort}`;
+      console.log(`Attempting to connect to WebSocket at: ${wsUrl}`);
+      
+      const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
       
       ws.onopen = () => {
@@ -73,7 +77,11 @@ const VideoStream = ({ ipAddress, wsPort = 8765, isConnected }: VideoStreamProps
 
       ws.onerror = (event) => {
         console.error("WebSocket error:", event);
-        setError("Failed to connect to video stream server. Make sure your WebSocket server supports secure connections (wss://) if viewing this page over HTTPS.");
+        if (isSecureConnection) {
+          setError("Failed to connect to video stream server. Your page is using HTTPS, so your WebSocket server must use secure WebSockets (wss://) by configuring SSL certificates on your Python server or using a secure proxy.");
+        } else {
+          setError("Failed to connect to video stream server. Check that your IP camera is accessible and the Python WebSocket server is running.");
+        }
         setStreamActive(false);
       };
 
@@ -92,7 +100,7 @@ const VideoStream = ({ ipAddress, wsPort = 8765, isConnected }: VideoStreamProps
         wsRef.current.close();
       }
     };
-  }, [ipAddress, wsPort, isConnected]);
+  }, [ipAddress, wsPort, isConnected, isSecureConnection]);
 
   if (!isConnected) {
     return (

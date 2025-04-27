@@ -4,7 +4,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Play, WifiOff, Camera, AlertCircle } from "lucide-react";
+import { Play, WifiOff, Camera, AlertCircle, Shield } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import VideoStream from "@/components/VideoStream";
@@ -143,9 +143,20 @@ const Dashboard = () => {
                     python object_detection_websocket.py {ipAddress}
                   </code>
                   {isSecureConnection && (
-                    <p className="text-sm text-amber-600 mt-2">
-                      <strong>Note:</strong> Since you're on HTTPS, you'll need to configure your WebSocket server to use a secure connection (wss://) or use a secure proxy.
-                    </p>
+                    <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded text-sm text-amber-800">
+                      <div className="flex items-center gap-1 mb-1">
+                        <Shield className="h-4 w-4" />
+                        <strong>HTTPS Security Note:</strong>
+                      </div>
+                      <p>
+                        Since you're on HTTPS, you'll need to either:
+                      </p>
+                      <ol className="list-decimal pl-5 mt-1 space-y-1">
+                        <li>Configure SSL certificates on your Python WebSocket server</li>
+                        <li>Use a secure WebSocket proxy (like Nginx or ngrok)</li>
+                        <li>Access this application over HTTP instead</li>
+                      </ol>
+                    </div>
                   )}
                 </div>
               )}
