@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -84,7 +84,7 @@ const Dashboard = () => {
       <h1 className="text-3xl font-bold mb-8">Dashboard Overview</h1>
       <div className="space-y-6">
         {isSecureConnection && (
-          <Alert variant="warning" className="mb-4">
+          <Alert variant="default" className="mb-4">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               You're viewing this page over HTTPS. For WebSocket connections to work properly, your Python server must support secure WebSockets (wss://) or be accessed through a secure proxy.
