@@ -26,11 +26,20 @@ serve(async (req) => {
       )
     }
 
+    // Detect if the request is coming from HTTPS
+    const requestScheme = req.headers.get("x-forwarded-proto") || "http";
+    const wsProtocol = requestScheme === "https" ? "wss" : "ws";
+
     // Instructions on how to connect to the WebSocket server
     const instructions = `
 To start the object detection WebSocket server, run:
 python object_detection_websocket.py ${ipAddress}
     `.trim();
+
+    // Add security note for HTTPS environments
+    const securityNote = requestScheme === "https" 
+      ? "Note: Your app is running in a secure context (HTTPS). For WebSocket connections to work properly, your WebSocket server must use secure WebSockets (wss://) or be accessed through a secure proxy." 
+      : "";
 
     // Return success response with instructions
     return new Response(
@@ -39,7 +48,9 @@ python object_detection_websocket.py ${ipAddress}
         message: 'IP address validated', 
         ipAddress,
         instructions,
-        wsPort: 8765 // Default WebSocket port
+        wsPort: 8765, // Default WebSocket port
+        wsProtocol,
+        securityNote
       }),
       { 
         status: 200,

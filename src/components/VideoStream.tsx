@@ -38,48 +38,59 @@ const VideoStream = ({ ipAddress, wsPort = 8765, isConnected }: VideoStreamProps
       return;
     }
 
-    // Connect to WebSocket when ipAddress is provided and connection is active
-    const ws = new WebSocket(`ws://${ipAddress}:${wsPort}`);
-    wsRef.current = ws;
+    // Determine protocol based on current page protocol
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     
-    ws.onopen = () => {
-      console.log("WebSocket connection established");
-      setStreamActive(true);
-      setError(null);
-      setStatusMessage("Connected to video stream");
-    };
+    try {
+      // Connect to WebSocket when ipAddress is provided and connection is active
+      const ws = new WebSocket(`${protocol}//${ipAddress}:${wsPort}`);
+      wsRef.current = ws;
+      
+      ws.onopen = () => {
+        console.log("WebSocket connection established");
+        setStreamActive(true);
+        setError(null);
+        setStatusMessage("Connected to video stream");
+      };
 
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        
-        if (data.type === "error") {
-          setError(data.message);
-          setStreamActive(false);
-        } else if (data.type === "status") {
-          setStatusMessage(data.message);
-        } else if (data.type === "frame") {
-          setLatestImage(`data:image/jpeg;base64,${data.image}`);
-          setDetections(data.detections || []);
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          
+          if (data.type === "error") {
+            setError(data.message);
+            setStreamActive(false);
+          } else if (data.type === "status") {
+            setStatusMessage(data.message);
+          } else if (data.type === "frame") {
+            setLatestImage(`data:image/jpeg;base64,${data.image}`);
+            setDetections(data.detections || []);
+          }
+        } catch (error) {
+          console.error("Failed to parse WebSocket message:", error);
         }
-      } catch (error) {
-        console.error("Failed to parse WebSocket message:", error);
-      }
-    };
+      };
 
-    ws.onerror = (event) => {
-      console.error("WebSocket error:", event);
-      setError("Failed to connect to video stream server");
-      setStreamActive(false);
-    };
+      ws.onerror = (event) => {
+        console.error("WebSocket error:", event);
+        setError("Failed to connect to video stream server. Make sure your WebSocket server supports secure connections (wss://) if viewing this page over HTTPS.");
+        setStreamActive(false);
+      };
 
-    ws.onclose = () => {
-      console.log("WebSocket connection closed");
+      ws.onclose = () => {
+        console.log("WebSocket connection closed");
+        setStreamActive(false);
+      };
+    } catch (error) {
+      console.error("WebSocket connection error:", error);
+      setError(`Failed to establish WebSocket connection: ${error.message}`);
       setStreamActive(false);
-    };
+    }
 
     return () => {
-      ws.close();
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
     };
   }, [ipAddress, wsPort, isConnected]);
 

@@ -4,16 +4,18 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Play, WifiOff, Camera } from "lucide-react";
+import { Play, WifiOff, Camera, AlertCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import VideoStream from "@/components/VideoStream";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Dashboard = () => {
   const [ipAddress, setIpAddress] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const { toast } = useToast();
+  const isSecureConnection = window.location.protocol === 'https:';
 
   const handleStartSession = async () => {
     try {
@@ -81,6 +83,15 @@ const Dashboard = () => {
     <DashboardLayout>
       <h1 className="text-3xl font-bold mb-8">Dashboard Overview</h1>
       <div className="space-y-6">
+        {isSecureConnection && (
+          <Alert variant="warning" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              You're viewing this page over HTTPS. For WebSocket connections to work properly, your Python server must support secure WebSockets (wss://) or be accessed through a secure proxy.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <Card>
           <CardContent className="pt-6">
             <div className="space-y-4">
@@ -131,6 +142,11 @@ const Dashboard = () => {
                   <code className="block bg-black text-white p-2 rounded mt-2 text-xs overflow-x-auto">
                     python object_detection_websocket.py {ipAddress}
                   </code>
+                  {isSecureConnection && (
+                    <p className="text-sm text-amber-600 mt-2">
+                      <strong>Note:</strong> Since you're on HTTPS, you'll need to configure your WebSocket server to use a secure connection (wss://) or use a secure proxy.
+                    </p>
+                  )}
                 </div>
               )}
             </div>
