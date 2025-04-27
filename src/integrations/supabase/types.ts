@@ -30,6 +30,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_configurations: {
+        Row: {
+          blynk_auth_token: string | null
+          camera_port: string | null
+          camera_url: string | null
+          created_at: string | null
+          enable_logging: boolean | null
+          id: string
+          telegram_bot_token: string | null
+          telegram_chat_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          blynk_auth_token?: string | null
+          camera_port?: string | null
+          camera_url?: string | null
+          created_at?: string | null
+          enable_logging?: boolean | null
+          id?: string
+          telegram_bot_token?: string | null
+          telegram_chat_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          blynk_auth_token?: string | null
+          camera_port?: string | null
+          camera_url?: string | null
+          created_at?: string | null
+          enable_logging?: boolean | null
+          id?: string
+          telegram_bot_token?: string | null
+          telegram_chat_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
